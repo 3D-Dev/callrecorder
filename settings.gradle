@@ -1,0 +1,2 @@
+include ':microsoft-azure-storage'
+include ':app', ':android-audio-library', ':android-library', ':jebml', ':android-vorbis', ':android-vorbis:libvorbis', ':android-vorbis:libogg'

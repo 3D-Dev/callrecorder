@@ -29,7 +29,7 @@
             android:title="@string/pref_rate_title" />
 
         <ListPreference
-            android:defaultValue="ogg"
+            android:defaultValue="mp3"
             android:entries="@array/encodings_text"
             android:entryValues="@array/encodings_values"
             android:key="encoding"

@@ -128,29 +128,9 @@ public class Storage extends com.github.axet.audiolibrary.app.Storage {
             format = format.replaceAll("%p", phone);
         else
             format = format.replaceAll("%p", "");
-//
-//        format = format.replaceAll("%T", "" + now / 1000);
-//        format = format.replaceAll("%s", SIMPLE.format(new Date()));
-//        format = format.replaceAll("%I", ISO8601.format(new Date()));
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd-HHmmss", Locale.JAPAN);
         String str = dateFormat.format(new Date());
-//        if (call == null || call.isEmpty()) {
-//            format = format.replaceAll("%i", "");
-//        } else {
-//            switch (call) {
-//                case CallApplication.CALL_IN:
-//                    format = format.replaceAll("%i", "↓");
-//                    break;
-//                case CallApplication.CALL_OUT:
-//                    format = format.replaceAll("%i", "↑");
-//                    break;
-//            }
-//        }
-//
-//        format = format.replaceAll("  ", " ");
-//
-//        format = format.trim();
 
         return str;
     }

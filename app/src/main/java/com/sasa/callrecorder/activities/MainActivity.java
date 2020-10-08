@@ -441,22 +441,6 @@ public class MainActivity extends AppCompatThemeActivity implements SharedPrefer
         } catch (RuntimeException e) {
             ErrorDialog.Error(this, e);
         }
-
-//        Runnable done = new Runnable() {
-//            @Override
-//            public void run() {
-//                recordings.progressText.setVisibility(View.VISIBLE);
-//                recordings.progressEmpty.setVisibility(View.GONE);
-//            }
-//        };
-//        recordings.progressText.setVisibility(View.GONE);
-//        recordings.progressEmpty.setVisibility(View.VISIBLE);
-//
-//        recordings.load(false, done);
-//
-//        updateHeader();
-//
-//        fab.setClickable(true);
     }
 
     void last() {
@@ -478,9 +462,6 @@ public class MainActivity extends AppCompatThemeActivity implements SharedPrefer
                 }
             }
         };
-//        recordings.progressText.setVisibility(View.GONE);
-//        recordings.progressEmpty.setVisibility(View.VISIBLE);
-//        recordings.load(false, done);
     }
 
     int getLastRecording() {

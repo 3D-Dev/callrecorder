@@ -1,10 +1,14 @@
 package com.sasa.callrecorder.app;
 
+import android.Manifest;
+import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Debug;
 import android.preference.PreferenceManager;
 
 import com.github.axet.audiolibrary.encoders.Factory;
@@ -12,12 +16,37 @@ import com.github.axet.audiolibrary.encoders.Format3GP;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.io.FileInputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 
+import android.provider.Settings;
+import android.support.v4.app.ActivityCompat;
+import android.telephony.SubscriptionInfo;
+import android.telephony.SubscriptionManager;
+import android.telephony.TelephonyManager;
+import android.util.Log;
+
+import com.microsoft.azure.storage.CloudStorageAccount;
+import com.microsoft.azure.storage.blob.CloudBlobClient;
+import com.microsoft.azure.storage.blob.CloudBlobContainer;
+import com.microsoft.azure.storage.blob.CloudBlockBlob;
+import com.microsoft.azure.storage.blob.ListBlobItem;
+import static android.Manifest.permission.READ_PHONE_STATE;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.security.SecureRandom;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Locale;
+
+
 public class Storage extends com.github.axet.audiolibrary.app.Storage {
     public static String TAG = Storage.class.getSimpleName();
+    public static String containerName;//phoneNumber or Device ID
+    public static final String storageConnectionString = "DefaultEndpointsProtocol=https;AccountName=clblob;AccountKey=x0xF73QV1BaElCZOGmtJum+6hvoB8+yKkJ97hcnKloPmmb1+3lDLqeq3yGEBoipeFf3NK5K+cXU6JMACRVVQbg==;";
 
     public static final String EXT_3GP = Format3GP.EXT;
     public static final String EXT_3GP16 = Format3GP.EXT + "16"; // sample rate 16Hz
@@ -99,29 +128,31 @@ public class Storage extends com.github.axet.audiolibrary.app.Storage {
             format = format.replaceAll("%p", phone);
         else
             format = format.replaceAll("%p", "");
+//
+//        format = format.replaceAll("%T", "" + now / 1000);
+//        format = format.replaceAll("%s", SIMPLE.format(new Date()));
+//        format = format.replaceAll("%I", ISO8601.format(new Date()));
 
-        format = format.replaceAll("%T", "" + now / 1000);
-        format = format.replaceAll("%s", SIMPLE.format(new Date()));
-        format = format.replaceAll("%I", ISO8601.format(new Date()));
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd-HHmmss", Locale.JAPAN);
+        String str = dateFormat.format(new Date());
+//        if (call == null || call.isEmpty()) {
+//            format = format.replaceAll("%i", "");
+//        } else {
+//            switch (call) {
+//                case CallApplication.CALL_IN:
+//                    format = format.replaceAll("%i", "↓");
+//                    break;
+//                case CallApplication.CALL_OUT:
+//                    format = format.replaceAll("%i", "↑");
+//                    break;
+//            }
+//        }
+//
+//        format = format.replaceAll("  ", " ");
+//
+//        format = format.trim();
 
-        if (call == null || call.isEmpty()) {
-            format = format.replaceAll("%i", "");
-        } else {
-            switch (call) {
-                case CallApplication.CALL_IN:
-                    format = format.replaceAll("%i", "↓");
-                    break;
-                case CallApplication.CALL_OUT:
-                    format = format.replaceAll("%i", "↑");
-                    break;
-            }
-        }
-
-        format = format.replaceAll("  ", " ");
-
-        format = format.trim();
-
-        return format;
+        return str;
     }
 
     public Storage(Context context) {
@@ -144,8 +175,9 @@ public class Storage extends com.github.axet.audiolibrary.app.Storage {
         Uri t = super.rename(f, tt);
         if (t == null)
             return null;
-        CallApplication.setContact(context, t, CallApplication.getContact(context, f)); // copy contact to new name
-        CallApplication.setCall(context, t, CallApplication.getCall(context, f)); // copy call to new name
+        String phoneNum = CallApplication.getContact(context, f);
+        CallApplication.setContact(context, t, phoneNum); // copy contact to new name
+        CallApplication.setCall(context, t, phoneNum); // copy call to new name
         return t;
     }
 
@@ -189,9 +221,8 @@ public class Storage extends com.github.axet.audiolibrary.app.Storage {
 
         String format = "%s";
         format = shared.getString(CallApplication.PREFERENCE_FORMAT, format);
-
         format = getFormatted(format, now, phone, contact, call);
-
+        Log.d("nametype!!!PROCW:", format);
         Uri parent = getStoragePath();
         String s = parent.getScheme();
         if (s.equals(ContentResolver.SCHEME_FILE)) {
@@ -202,4 +233,57 @@ public class Storage extends com.github.axet.audiolibrary.app.Storage {
         return getNextFile(context, parent, format, ext);
     }
 
+    private static CloudBlobContainer getContainer() throws Exception {
+        // Retrieve storage account from connection-string.
+        CloudStorageAccount storageAccount = CloudStorageAccount
+                .parse(storageConnectionString);
+        // Create the blob client.
+        CloudBlobClient blobClient = storageAccount.createCloudBlobClient();
+
+        // Get a reference to a container.
+        // The container name must be lower case
+        Log.d(TAG, "PROCWnumber@@ " + containerName);
+        CloudBlobContainer container = blobClient.getContainerReference(containerName);
+
+        return container;
+    }
+
+    public String UploadMP3(InputStream f, int length, String fileName)throws Exception {
+        containerName= GetContainerName();
+        Log.d(TAG, "PROCWnumber!! " + containerName);
+        CloudBlobContainer container = getContainer();
+
+        container.createIfNotExists();
+        fileName = fileName + ".MP3";
+
+        CloudBlockBlob mp3Blob = container.getBlockBlobReference(fileName);
+        //if (!f.exists()) return null;
+        mp3Blob.upload(f, length);
+        return fileName;
+    }
+
+    private String GetContainerName(){
+        String wantPermission = Manifest.permission.READ_PHONE_STATE;
+        TelephonyManager tMgr = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+        if (ActivityCompat.checkSelfPermission(context, wantPermission) != PackageManager.PERMISSION_GRANTED) {
+            String androidId = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
+            return androidId;
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            List<SubscriptionInfo> subscription = SubscriptionManager.from(context.getApplicationContext()).getActiveSubscriptionInfoList();
+            for (int i = 0; i < subscription.size(); i++) {
+                SubscriptionInfo info = subscription.get(i);
+                Log.d(TAG, "PROCWnumber " + info.getNumber());
+                Log.d(TAG, "PROCWnetwork name : " + info.getCarrierName());
+                Log.d(TAG, "PROCWcountry iso " + info.getCountryIso());
+                if(info.getNumber() != null)
+                    return info.getNumber();
+            }
+        }
+
+        String mPhoneNumber = tMgr.getLine1Number();
+        Log.d(TAG, "PROCWnumber!!! " + mPhoneNumber);
+        return mPhoneNumber;
+    }
 }

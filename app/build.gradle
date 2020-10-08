@@ -7,7 +7,7 @@ android {
 
     defaultConfig {
         applicationId "com.sasa.callrecorder"
-        minSdkVersion 9
+        minSdkVersion 15
         targetSdkVersion 28
         versionCode 1
         versionName "1.0"
@@ -69,4 +69,10 @@ dependencies {
     implementation 'com.github.axet:android-audio-library:1.0.174' // implementation project(':android-audio-library')
     implementation "org.apache.commons:commons-csv:1.5"
     assets('com.google.android.exoplayer:exoplayer:2.7.3') { exclude group: 'com.android.support' }
+    compile 'com.microsoft.azure.android:azure-storage-android:0.8.0@aar'
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    })
+    testCompile 'junit:junit:4.12'
 }

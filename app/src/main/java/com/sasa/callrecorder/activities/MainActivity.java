@@ -478,9 +478,9 @@ public class MainActivity extends AppCompatThemeActivity implements SharedPrefer
                 }
             }
         };
-        recordings.progressText.setVisibility(View.GONE);
-        recordings.progressEmpty.setVisibility(View.VISIBLE);
-        recordings.load(false, done);
+//        recordings.progressText.setVisibility(View.GONE);
+//        recordings.progressEmpty.setVisibility(View.VISIBLE);
+//        recordings.load(false, done);
     }
 
     int getLastRecording() {

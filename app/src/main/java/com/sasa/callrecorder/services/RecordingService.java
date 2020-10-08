@@ -14,6 +14,7 @@ import android.media.AudioRecord;
 import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Debug;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.ParcelFileDescriptor;
@@ -55,6 +56,7 @@ import java.io.File;
 import java.io.FileDescriptor;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -94,6 +96,7 @@ public class RecordingService extends PersistentService implements SharedPrefere
     String contact = "";
     String contactId = "";
     String call;
+    String fileName;
 
     int sampleRate; // variable from settings. how may samples per second.
     long samplesTime; // how many samples passed for current recording
@@ -552,6 +555,7 @@ public class RecordingService extends PersistentService implements SharedPrefere
 
         title = encoding != null ? getString(R.string.encoding_title) : (getString(R.string.recording_title) + " " + getSourceText());
         text = ".../" + Storage.getName(this, targetUri);
+        Log.d("PROCWTagetURI:", String.valueOf(targetUri));
         builder.setViewVisibility(R.id.notification_pause, View.VISIBLE);
         builder.setImageViewResource(R.id.notification_pause, recording ? R.drawable.ic_stop_black_24dp : R.drawable.ic_play_arrow_black_24dp);
 
@@ -1007,6 +1011,9 @@ public class RecordingService extends PersistentService implements SharedPrefere
     void begin(boolean wasRinging) {
         now = System.currentTimeMillis();
         targetUri = storage.getNewFile(now, phone, contact, call);
+        String format = "%s";
+        fileName = storage.getFormatted(format, now, phone, contact, call);
+        Log.d("PROCWStorageFileName:", fileName);
         if (encoder != null)
             encoder.pause();
         if (storage.recordingPending()) {
@@ -1021,6 +1028,7 @@ public class RecordingService extends PersistentService implements SharedPrefere
     void finish() {
         stopRecording();
         File tmp = storage.getTempRecording();
+        UploadMP3(fileName);
         if (tmp.exists() && tmp.length() > 0) {
             File parent = tmp.getParentFile();
             File in = Storage.getNextFile(parent, Storage.TMP_REC, null);
@@ -1033,6 +1041,45 @@ public class RecordingService extends PersistentService implements SharedPrefere
         } else { // if encoding failed, we will get no output file, hide notifications
             deleteOld();
             updateIcon(false);
+        }
+    }
+
+    private void UploadMP3(final String mp3fileName)
+    {
+        try {
+            Log.d("PROCW_UPloadMP3!", String.valueOf(targetUri));
+            final InputStream fileStream = getContentResolver().openInputStream(targetUri);
+            final int fileLength = fileStream.available();
+            final Handler handler = new Handler();
+            Thread th = new Thread(new Runnable() {
+                public void run() {
+
+                    try {
+
+                        final String fileName = storage.UploadMP3(fileStream, fileLength, mp3fileName);
+                        Log.d("PROCW_Success:", fileName);
+
+                        handler.post(new Runnable() {
+
+                            public void run() {
+                                Toast.makeText(getBaseContext(), "file Uploaded Successfully. Name = " + fileName, Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    } catch (Exception ex) {
+                        final String exceptionMessage = ex.getMessage();
+                        handler.post(new Runnable() {
+                            public void run() {
+                                Toast.makeText(getBaseContext(), exceptionMessage, Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
+                }
+            });
+            th.start();
+        }
+        catch(Exception ex) {
+
+            android.widget.Toast.makeText(this, ex.getMessage(), android.widget.Toast.LENGTH_SHORT).show();
         }
     }
 

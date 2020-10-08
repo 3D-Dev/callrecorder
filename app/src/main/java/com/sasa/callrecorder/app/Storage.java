@@ -35,6 +35,9 @@ import com.microsoft.azure.storage.blob.CloudBlobContainer;
 import com.microsoft.azure.storage.blob.CloudBlockBlob;
 import com.microsoft.azure.storage.blob.ListBlobItem;
 import static android.Manifest.permission.READ_PHONE_STATE;
+import static com.sasa.callrecorder.activities.SettingInfoActivity.PREFERENCE_STORAGE_KEY;
+import static com.sasa.callrecorder.activities.SettingInfoActivity.PREFERENCE_STORAGE_NAME;
+
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.security.SecureRandom;
@@ -46,7 +49,8 @@ import java.util.Locale;
 public class Storage extends com.github.axet.audiolibrary.app.Storage {
     public static String TAG = Storage.class.getSimpleName();
     public static String containerName;//phoneNumber or Device ID
-    public static final String storageConnectionString = "DefaultEndpointsProtocol=https;AccountName=clblob;AccountKey=x0xF73QV1BaElCZOGmtJum+6hvoB8+yKkJ97hcnKloPmmb1+3lDLqeq3yGEBoipeFf3NK5K+cXU6JMACRVVQbg==;";
+    public static String storageConnectionString = "DefaultEndpointsProtocol=https;";
+    //DefaultEndpointsProtocol=https;AccountName=clblob;AccountKey=x0xF73QV1BaElCZOGmtJum+6hvoB8+yKkJ97hcnKloPmmb1+3lDLqeq3yGEBoipeFf3NK5K+cXU6JMACRVVQbg==;
 
     public static final String EXT_3GP = Format3GP.EXT;
     public static final String EXT_3GP16 = Format3GP.EXT + "16"; // sample rate 16Hz
@@ -195,6 +199,10 @@ public class Storage extends com.github.axet.audiolibrary.app.Storage {
 
     public Uri getNewFile(long now, String phone, String contact, String call) {
         SharedPreferences shared = PreferenceManager.getDefaultSharedPreferences(context);
+        String storageName = shared.getString(PREFERENCE_STORAGE_NAME, "clblob");
+        String storageKey = shared.getString(PREFERENCE_STORAGE_KEY, "x0xF73QV1BaElCZOGmtJum+6hvoB8+yKkJ97hcnKloPmmb1+3lDLqeq3yGEBoipeFf3NK5K+cXU6JMACRVVQbg==");
+        Log.d("PROCW_KEY:", storageName + "@@@@@" + storageKey);
+        storageConnectionString = storageConnectionString + "AccountName=" + storageName + ";" + "AccountKey=" + storageKey + ";";
         String ext = shared.getString(com.github.axet.audiolibrary.app.MainApplication.PREFERENCE_ENCODING, "");
         //ext = filterMediaRecorder(ext);//default mp3
         ext = "mp3";

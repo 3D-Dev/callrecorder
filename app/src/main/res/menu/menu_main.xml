@@ -26,4 +26,9 @@
         android:orderInCategory="500"
         android:title="@string/call_recording"
         app:showAsAction="never" />
+    <item
+        android:id="@+id/action_setting_info"
+        android:orderInCategory="600"
+        android:title="@string/action_settings"
+        app:showAsAction="never" />
 </menu>

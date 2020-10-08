@@ -20,6 +20,7 @@ import android.graphics.drawable.ShapeDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Debug;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
@@ -81,10 +82,6 @@ public class MainActivity extends AppCompatThemeActivity implements SharedPrefer
     public static String SET_PROGRESS = MainActivity.class.getCanonicalName() + ".SET_PROGRESS";
     public static String SHOW_LAST = MainActivity.class.getCanonicalName() + ".SHOW_LAST";
     public static String ENABLE = MainActivity.class.getCanonicalName() + ".ENABLE";
-
-    public static String SURVEY_URL = "https://docs.google.com/forms/d/e/1FAIpQLSdNWW4nmCXTrGFKbd_9_bPrxwlrfyPyzKtRESsGeaKist06VA/viewform?usp=pp_url&entry.1823308770=%MANUFACTURER%&entry.856269988=%MODEL%&entry.2054570575=%OSVERSION%&entry.1549394127=%ROOT%&entry.2121261645=%BASEBAND%&entry.648583455=%ENCODER%&entry.1739416324=%SOURCE%&entry.1221822567=%QUALITY%&entry.533092626=%INSTALLED%&entry.992467367=%VERSION%";
-    public static String SURVEY_URL_VIEW = "https://axet.gitlab.io/android-call-recorder/?m=%MANUFACTURER%&d=%MODEL%";
-
     public static final int RESULT_CALL = 1;
 
     public static final String[] MUST = new String[]{
@@ -223,115 +220,6 @@ public class MainActivity extends AppCompatThemeActivity implements SharedPrefer
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-//        fab_panel = findViewById(R.id.fab_panel);
-//        status = (TextView) fab_panel.findViewById(R.id.status);
-
-//        fab_stop = (FloatingActionButton) findViewById(R.id.fab_stop);
-//        fab_stop.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                RecordingService.stopButton(MainActivity.this);
-//            }
-//        });
-
-//        fab = (FloatingActionButton) findViewById(R.id.fab);
-//        fab.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                RecordingService.stopButton(MainActivity.this);
-//            }
-//        });
-
-//        updatePanel();
-
-//        View empty = findViewById(R.id.empty_list);
-//        recordings = new Recordings(this, list);
-//        recordings.setEmptyView(empty);
-//        list.setAdapter(recordings.empty);
-//        list.setLayoutManager(new LinearLayoutManager(this));
-//        list.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
-//        recordings.setToolbar((ViewGroup) findViewById(R.id.recording_toolbar));
-
-        final SharedPreferences shared = PreferenceManager.getDefaultSharedPreferences(this);
-//        if (shared.getBoolean("warning", true)) {
-//            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-//            builder.setView(R.layout.warning);
-//            builder.setCancelable(false);
-//            builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-//                @Override
-//                public void onClick(DialogInterface dialog, int which) {
-//                    SharedPreferences.Editor edit = shared.edit();
-//                    edit.putBoolean("warning", false);
-//                    edit.commit();
-//                }
-//            });
-//            final AlertDialog d = builder.create();
-//            d.setOnShowListener(new DialogInterface.OnShowListener() {
-//                Button b;
-//                SwitchCompat sw1, sw2, sw3, sw4;
-//
-//                @Override
-////                public void onShow(DialogInterface dialog) {
-////                    b = d.getButton(DialogInterface.BUTTON_POSITIVE);
-////                    b.setEnabled(false);
-////                    Window w = d.getWindow();
-////                    sw1 = (SwitchCompat) w.findViewById(R.id.recording);
-////                    sw1.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-////                        @Override
-////                        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-////                            if (isChecked)
-////                                sw1.setClickable(false);
-////                            update();
-////                        }
-////                    });
-////                    sw2 = (SwitchCompat) w.findViewById(R.id.quality);
-////                    sw2.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-////                        @Override
-////                        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-////                            if (isChecked)
-////                                sw2.setClickable(false);
-////                            update();
-////                        }
-////                    });
-////                    sw3 = (SwitchCompat) w.findViewById(R.id.taskmanagers);
-////                    sw3.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-////                        @Override
-////                        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-////                            if (isChecked) {
-////                                sw3.setClickable(false);
-////                            }
-////                            update();
-////                        }
-////                    });
-////                    sw4 = (SwitchCompat) w.findViewById(R.id.mixedpaths_switch);
-////                    final MixerPaths m = new MixerPaths();
-////                    if (!m.isCompatible() || m.isEnabled()) {
-////                        View v = w.findViewById(R.id.mixedpaths);
-////                        v.setVisibility(View.GONE);
-////                        sw4.setChecked(true);
-////                    } else {
-////                        sw4.setChecked(m.isEnabled());
-////                        sw4.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-////                            @Override
-////                            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-////                                if (isChecked)
-////                                    sw4.setClickable(false);
-////                                m.load();
-////                                if (isChecked && !m.isEnabled())
-////                                    MixerPathsPreferenceCompat.show(MainActivity.this);
-////                                update();
-////                            }
-////                        });
-////                    }
-////                }
-//
-//                void update() {
-//                    b.setEnabled(sw1.isChecked() && sw2.isChecked() && sw3.isChecked() && sw4.isChecked());
-//                }
-//            });
-//            d.show();
-//        }
-
         if (OptimizationPreferenceCompat.needKillWarning(this, CallApplication.PREFERENCE_NEXT))
             OptimizationPreferenceCompat.buildKilledWarning(new ContextThemeWrapper(this, getAppTheme()), true, CallApplication.PREFERENCE_OPTIMIZATION, RecordingService.class).show();
         else if (OptimizationPreferenceCompat.needBootWarning(this, CallApplication.PREFERENCE_BOOT))
@@ -341,6 +229,12 @@ public class MainActivity extends AppCompatThemeActivity implements SharedPrefer
 
         Intent intent = getIntent();
         openIntent(intent);
+    }
+
+    @Override
+    public void onBackPressed() {
+        finish();
+        MainActivity.startActivity(this);
     }
 
     @Override
@@ -369,6 +263,20 @@ public class MainActivity extends AppCompatThemeActivity implements SharedPrefer
         MenuItem call = menu.findItem(R.id.action_call);
         boolean b = RecordingService.isEnabled(this);
         call.setChecked(b);
+
+        //------------Permission
+        final SharedPreferences shared = PreferenceManager.getDefaultSharedPreferences(this);
+        boolean checked = shared.getBoolean(CallApplication.PREFERENCE_CALL, true);
+        Log.d("PROCW1", String.valueOf(checked));
+        call.setChecked(checked);
+        if (checked && !Storage.permitted(MainActivity.this, PERMISSIONS, RESULT_CALL)) {
+            resumeCall = call;
+            Log.d("PROCW2","");
+        }
+        RecordingService.setEnabled(this, call.isChecked());//default
+        Log.d("PROCW_CHECKED:", String.valueOf(RecordingService.isEnabled(this)));
+        //----------------------
+
 
         MenuItem show = menu.findItem(R.id.action_show_folder);
         Intent ii = StorageProvider.openFolderIntent(this, storage.getStoragePath());
@@ -399,20 +307,13 @@ public class MainActivity extends AppCompatThemeActivity implements SharedPrefer
             }
         });
 
-//        recordings.onCreateOptionsMenu(menu);
 
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        final SharedPreferences shared = PreferenceManager.getDefaultSharedPreferences(this);
-//        if (recordings.onOptionsItemSelected(this, item))
-//            return true;
         switch (item.getItemId()) {
-            case R.id.action_settings:
-                startActivity(new Intent(this, SettingsActivity.class));
-                return true;
             case R.id.action_call:
                 item.setChecked(!item.isChecked());
                 if (item.isChecked() && !Storage.permitted(MainActivity.this, PERMISSIONS, RESULT_CALL)) {
@@ -421,9 +322,8 @@ public class MainActivity extends AppCompatThemeActivity implements SharedPrefer
                 }
                 RecordingService.setEnabled(this, item.isChecked());
                 return true;
-            case R.id.action_show_folder:
-                Intent intent = item.getIntent();
-                startActivity(intent);
+            case R.id.action_setting_info:
+                startActivity(new Intent(this, SettingInfoActivity.class));
                 return true;
         }
         return super.onOptionsItemSelected(item);

@@ -141,7 +141,7 @@ public class RecordingService extends PersistentService implements SharedPrefere
 
     public static boolean isEnabled(Context context) {
         final SharedPreferences shared = PreferenceManager.getDefaultSharedPreferences(context);
-        boolean b = shared.getBoolean(CallApplication.PREFERENCE_CALL, false);
+        boolean b = shared.getBoolean(CallApplication.PREFERENCE_CALL, true);
         if (!Storage.permitted(context, MainActivity.MUST))
             b = false;
         return b;

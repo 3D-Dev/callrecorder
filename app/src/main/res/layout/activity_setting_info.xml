@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    tools:context="com.sasa.callrecorder.activities.SettingInfoActivity">
+
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/AppThemeLight.AppBarOverlay">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            android:theme="@style/AppThemeLight.AppBarOverlay"
+            app:popupTheme="@style/AppThemeLight.PopupOverlay" />
+    </android.support.design.widget.AppBarLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:orientation="vertical">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="22dp"
+            android:orientation="horizontal">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="アカウント名:  "
+                android:textSize="17sp"/>
+            <EditText
+                android:id="@+id/storageID"
+                android:layout_width="match_parent"
+                android:layout_height="45dp"
+                android:hint="clblob"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="22dp"
+            android:layout_marginTop="40dp">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="キー:  "
+                android:textSize="17sp"/>
+            <EditText
+                android:id="@+id/storageKey"
+                android:layout_width="match_parent"
+                android:layout_height="45dp"
+                android:hint="x0xF73QV1BaElCZOGmtJum+6hvoB8+yKkJ97hcnKloPmmb1+3lDLqeq3yGEBoipeFf3NK5K+cXU6JMACRVVQbg=="/>
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/settingInfo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="40dp"
+            android:text="設定"
+            android:layout_gravity="center"/>
+    </LinearLayout>
+
+
+
+
+</android.support.design.widget.CoordinatorLayout>

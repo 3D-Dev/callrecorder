@@ -283,31 +283,6 @@ public class MainActivity extends AppCompatThemeActivity implements SharedPrefer
         show.setIntent(ii);
         if (!StorageProvider.isFolderCallable(this, ii, StorageProvider.getProvider().getAuthority()))
             show.setVisible(false);
-
-        MenuItem search = menu.findItem(R.id.action_search);
-        final SearchView searchView = (SearchView) MenuItemCompat.getActionView(search);
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                searchView.clearFocus();
-                recordings.search(query);
-                return true;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                return false;
-            }
-        });
-        searchView.setOnCloseListener(new SearchView.OnCloseListener() {
-            @Override
-            public boolean onClose() {
-                recordings.searchClose();
-                return true;
-            }
-        });
-
-
         return true;
     }
 

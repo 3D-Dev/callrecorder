@@ -1,0 +1,64 @@
+apply plugin: 'com.android.application'
+apply plugin: 'com.github.axet.dxplugin'
+
+android {
+    compileSdkVersion 25
+    buildToolsVersion '28.0.3'
+
+    defaultConfig {
+        applicationId "com.sasa.callrecorder"
+        minSdkVersion 15
+        targetSdkVersion 28
+        versionCode 1
+        versionName "1.0"
+    }
+    signingConfigs {
+        release {
+            storeFile file(prop('RELEASE_STORE_FILE') ?: 'none')
+            storePassword prop('RELEASE_STORE_PASSWORD')
+            keyAlias prop('RELEASE_KEY_ALIAS')
+            keyPassword prop('RELEASE_KEY_PASSWORD')
+        }
+    }
+    buildTypes {
+        debug {
+            debuggable true
+            jniDebuggable true
+            minifyEnabled false
+        }
+        release {
+            shrinkResources true
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
+        }
+    }
+    applicationVariants.all { variant ->
+        variant.outputs.each { output ->
+            output.outputFileName = org.apache.commons.io.FilenameUtils.getExtension(android.defaultConfig.applicationId) + "-" + (output.getFilter(com.android.build.OutputFile.ABI) ?: "universal") + "-" + android.defaultConfig.versionName + "-" + variant.buildType.name + ".apk"
+        }
+    }
+    bundle {
+        abi {
+            enableSplit = true
+        }
+    }
+    splits {
+        abi {
+            enable false
+            universalApk true
+        }
+    }
+}
+
+dependencies {
+    implementation 'com.github.axet:android-audio-library:1.0.174' // implementation project(':android-audio-library')
+    implementation "org.apache.commons:commons-csv:1.5"
+    assets('com.google.android.exoplayer:exoplayer:2.7.3') { exclude group: 'com.android.support' }
+    compile 'com.microsoft.azure.android:azure-storage-android:0.8.0@aar'
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    })
+    testCompile 'junit:junit:4.12'
+}

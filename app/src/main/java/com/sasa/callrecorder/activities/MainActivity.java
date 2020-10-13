@@ -8,72 +8,28 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
 import android.content.res.Configuration;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.GradientDrawable;
-import android.graphics.drawable.ShapeDrawable;
-import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Debug;
-import android.os.Handler;
 import android.preference.PreferenceManager;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.view.ContextThemeWrapper;
 import android.support.v7.view.menu.MenuBuilder;
-import android.support.v7.widget.DividerItemDecoration;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SearchView;
-import android.support.v7.widget.SwitchCompat;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.Window;
-import android.widget.Button;
-import android.widget.CompoundButton;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.github.axet.androidlibrary.activities.AppCompatThemeActivity;
 import com.github.axet.androidlibrary.app.SuperUser;
-import com.github.axet.androidlibrary.preferences.AboutPreferenceCompat;
 import com.github.axet.androidlibrary.preferences.OptimizationPreferenceCompat;
 import com.github.axet.androidlibrary.services.StorageProvider;
 import com.github.axet.androidlibrary.widgets.ErrorDialog;
-import com.github.axet.audiolibrary.encoders.Format3GP;
-import com.github.axet.audiolibrary.encoders.FormatFLAC;
-import com.github.axet.audiolibrary.encoders.FormatM4A;
-import com.github.axet.audiolibrary.encoders.FormatMP3;
-import com.github.axet.audiolibrary.encoders.FormatOGG;
-import com.github.axet.audiolibrary.encoders.FormatOPUS;
-import com.github.axet.audiolibrary.encoders.FormatWAV;
 import com.sasa.callrecorder.R;
 import com.sasa.callrecorder.app.CallApplication;
-import com.sasa.callrecorder.app.MixerPaths;
-import com.sasa.callrecorder.app.Recordings;
 import com.sasa.callrecorder.app.Storage;
-import com.sasa.callrecorder.app.SurveysReader;
 import com.sasa.callrecorder.services.RecordingService;
-import com.sasa.callrecorder.widgets.MixerPathsPreferenceCompat;
-
-import org.apache.commons.csv.CSVRecord;
-
-import java.util.Arrays;
-import java.util.Locale;
 
 public class MainActivity extends AppCompatThemeActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
     public final static String TAG = MainActivity.class.getSimpleName();
@@ -96,11 +52,6 @@ public class MainActivity extends AppCompatThemeActivity implements SharedPrefer
             Manifest.permission.READ_CONTACTS, // get contact name by phone number
             Manifest.permission.READ_PHONE_STATE, // read outgoing going calls information
     });
-
-    FloatingActionButton fab;
-    FloatingActionButton fab_stop;
-    View fab_panel;
-    TextView status;
     boolean show;
     Boolean recording;
     int encoding;
@@ -109,10 +60,8 @@ public class MainActivity extends AppCompatThemeActivity implements SharedPrefer
 
     MenuItem resumeCall;
 
-    Recordings recordings;
     Storage storage;
     RecyclerView list;
-    Handler handler = new Handler();
 
     BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
@@ -124,11 +73,9 @@ public class MainActivity extends AppCompatThemeActivity implements SharedPrefer
                 recording = (Boolean) intent.getExtras().get("recording");
                 sec = intent.getLongExtra("sec", 0);
                 phone = intent.getStringExtra("phone");
-//                updatePanel();
             }
             if (a.equals(SET_PROGRESS)) {
                 encoding = intent.getIntExtra("set", 0);
-//                updatePanel();
             }
             if (a.equals(SHOW_LAST)) {
                 last();
@@ -171,30 +118,6 @@ public class MainActivity extends AppCompatThemeActivity implements SharedPrefer
         context.startActivity(i);
     }
 
-    public static void setSolid(Drawable background, int color) {
-        if (background instanceof ShapeDrawable) {
-            ShapeDrawable shapeDrawable = (ShapeDrawable) background;
-            shapeDrawable.getPaint().setColor(color);
-        } else if (background instanceof GradientDrawable) {
-            GradientDrawable gradientDrawable = (GradientDrawable) background;
-            gradientDrawable.setColor(color);
-        } else if (background instanceof ColorDrawable) {
-            ColorDrawable colorDrawable = (ColorDrawable) background;
-            if (Build.VERSION.SDK_INT >= 11)
-                colorDrawable.setColor(color);
-        }
-    }
-
-    public static String join(String... args) {
-        StringBuilder bb = new StringBuilder();
-        for (int i = 1; i < args.length; i++) {
-            if (bb.length() != 0)
-                bb.append(args[0]);
-            bb.append(args[i]);
-        }
-        return bb.toString();
-    }
-
     @Override
     public int getAppTheme() {
         return CallApplication.getTheme(this, R.style.RecThemeLight_NoActionBar, R.style.RecThemeDark_NoActionBar);
@@ -233,8 +156,12 @@ public class MainActivity extends AppCompatThemeActivity implements SharedPrefer
 
     @Override
     public void onBackPressed() {
-        finish();
-        MainActivity.startActivity(this);
+        Intent setIntent = new Intent(Intent.ACTION_MAIN);
+        setIntent.addCategory(Intent.CATEGORY_HOME);
+        setIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(setIntent);
+        //finish();
+        //MainActivity.startActivity(this);
     }
 
     @Override
@@ -316,41 +243,6 @@ public class MainActivity extends AppCompatThemeActivity implements SharedPrefer
     }
 
     void last() {
-        Runnable done = new Runnable() {
-            @Override
-            public void run() {
-                final int selected = getLastRecording();
-                recordings.progressText.setVisibility(View.VISIBLE);
-                recordings.progressEmpty.setVisibility(View.GONE);
-                if (selected != -1) {
-                    recordings.select(selected);
-                    list.smoothScrollToPosition(selected);
-                    handler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            list.scrollToPosition(selected);
-                        }
-                    });
-                }
-            }
-        };
-    }
-
-    int getLastRecording() {
-        final SharedPreferences shared = PreferenceManager.getDefaultSharedPreferences(this);
-        String last = shared.getString(CallApplication.PREFERENCE_LAST, "");
-        last = last.toLowerCase();
-        for (int i = 0; i < recordings.getItemCount(); i++) {
-            Storage.RecordingUri f = recordings.getItem(i);
-            String n = Storage.getName(this, f.uri).toLowerCase();
-            if (n.equals(last)) {
-                SharedPreferences.Editor edit = shared.edit();
-                edit.putString(CallApplication.PREFERENCE_LAST, "");
-                edit.commit();
-                return i;
-            }
-        }
-        return -1;
     }
 
     @Override
@@ -401,7 +293,6 @@ public class MainActivity extends AppCompatThemeActivity implements SharedPrefer
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        recordings.close();
         if (receiver != null) {
             unregisterReceiver(receiver);
             receiver = null;
@@ -418,42 +309,7 @@ public class MainActivity extends AppCompatThemeActivity implements SharedPrefer
         super.onStop();
     }
 
-//    void updatePanel() {
-//        fab_panel.setVisibility(show ? View.VISIBLE : View.GONE);
-//        if (encoding >= 0) {
-//            status.setText(getString(R.string.encoding_title) + encoding + "%");
-//            fab.setVisibility(View.GONE);
-//            fab_stop.setVisibility(View.INVISIBLE);
-//        } else {
-//            String text = phone;
-//            if (!text.isEmpty())
-//                text += " - ";
-//            text += CallApplication.formatDuration(this, sec * 1000);
-//            text = text.trim();
-//            status.setText(text);
-//            fab.setVisibility(show ? View.VISIBLE : View.GONE);
-//            fab_stop.setVisibility(View.INVISIBLE);
-//        }
-//        if (recording == null) {
-//            fab.setVisibility(View.GONE);
-//        } else if (recording) {
-//            fab.setImageResource(R.drawable.ic_stop_black_24dp);
-//        } else {
-//            fab.setImageResource(R.drawable.ic_play_arrow_black_24dp);
-//        }
-//    }
-
-    void updateHeader() {
-        Uri f = storage.getStoragePath();
-        long free = Storage.getFree(this, f);
-        long sec = Storage.average(this, free);
-        TextView text = (TextView) findViewById(R.id.space_left);
-        text.setText(CallApplication.formatFree(this, free, sec));
-    }
-
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        if (key.equals(CallApplication.PREFERENCE_STORAGE))
-            recordings.load(true, null);
     }
 }

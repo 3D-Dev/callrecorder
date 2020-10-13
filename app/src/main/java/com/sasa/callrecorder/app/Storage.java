@@ -1,14 +1,12 @@
 package com.sasa.callrecorder.app;
 
 import android.Manifest;
-import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
-import android.os.Debug;
 import android.preference.PreferenceManager;
 
 import com.github.axet.audiolibrary.encoders.Factory;
@@ -16,7 +14,6 @@ import com.github.axet.audiolibrary.encoders.Format3GP;
 
 import java.io.File;
 import java.io.FileFilter;
-import java.io.FileInputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -27,21 +24,15 @@ import android.support.v4.app.ActivityCompat;
 import android.telephony.SubscriptionInfo;
 import android.telephony.SubscriptionManager;
 import android.telephony.TelephonyManager;
-import android.util.Log;
 
 import com.microsoft.azure.storage.CloudStorageAccount;
 import com.microsoft.azure.storage.blob.CloudBlobClient;
 import com.microsoft.azure.storage.blob.CloudBlobContainer;
 import com.microsoft.azure.storage.blob.CloudBlockBlob;
-import com.microsoft.azure.storage.blob.ListBlobItem;
-import static android.Manifest.permission.READ_PHONE_STATE;
 import static com.sasa.callrecorder.activities.SettingInfoActivity.PREFERENCE_STORAGE_KEY;
 import static com.sasa.callrecorder.activities.SettingInfoActivity.PREFERENCE_STORAGE_NAME;
 
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.security.SecureRandom;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 

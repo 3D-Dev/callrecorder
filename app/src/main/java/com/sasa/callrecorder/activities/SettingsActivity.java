@@ -2,14 +2,12 @@ package com.sasa.callrecorder.activities;
 
 
 import android.Manifest;
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.media.MediaRecorder;
 import android.os.Build;
 import android.os.Bundle;
-import android.preference.PreferenceFragment;
 import android.support.annotation.NonNull;
 import android.support.v7.app.ActionBar;
 import android.support.v7.preference.ListPreference;
@@ -84,15 +82,10 @@ public class SettingsActivity extends AppCompatSettingsThemeActivity implements 
         super.onResume();
     }
 
-    /**
-     * Set up the {@link android.app.ActionBar}, if the API is available.
-     */
     private void setupActionBar() {
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
-            // Show the Up button in the action bar.
             actionBar.setDisplayHomeAsUpEnabled(true);
-//            actionBar.setBackgroundDrawable(new ColorDrawable(CallApplication.getActionbarColor(this)));
         }
     }
 
@@ -149,10 +142,6 @@ public class SettingsActivity extends AppCompatSettingsThemeActivity implements 
         return false;
     }
 
-    /**
-     * This fragment shows general preferences only. It is used when the
-     * activity is showing a two-pane settings UI.
-     */
     public static class GeneralPreferenceFragment extends PreferenceFragmentCompat {
         public GeneralPreferenceFragment() {
         }

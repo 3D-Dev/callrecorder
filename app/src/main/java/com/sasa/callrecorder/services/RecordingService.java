@@ -14,7 +14,6 @@ import android.media.AudioRecord;
 import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.Build;
-import android.os.Debug;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.ParcelFileDescriptor;
@@ -47,7 +46,6 @@ import com.github.axet.audiolibrary.filters.VoiceFilter;
 import com.sasa.callrecorder.BuildConfig;
 import com.sasa.callrecorder.R;
 import com.sasa.callrecorder.activities.MainActivity;
-import com.sasa.callrecorder.activities.RecentCallActivity;
 import com.sasa.callrecorder.activities.SettingsActivity;
 import com.sasa.callrecorder.app.CallApplication;
 import com.sasa.callrecorder.app.Storage;
@@ -58,19 +56,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.HashMap;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-/**
- * RecordingActivity more likly to be removed from memory when paused then service. Notification button
- * does not handle getActvity without unlocking screen. The only option is to have Service.
- * <p/>
- * So, lets have it.
- * <p/>
- * Maybe later this class will be converted for fully feature recording service with recording thread.
- */
 public class RecordingService extends PersistentService implements SharedPreferences.OnSharedPreferenceChangeListener {
     public static final String TAG = RecordingService.class.getSimpleName();
 
@@ -91,7 +79,7 @@ public class RecordingService extends PersistentService implements SharedPrefere
     PhoneStateChangeListener pscl;
 
     long now;
-    Uri targetUri; // output target file 2016-01-01 01.01.01.wav
+    Uri targetUri;
     String phone = "";
     String contact = "";
     String contactId = "";
@@ -419,61 +407,6 @@ public class RecordingService extends PersistentService implements SharedPrefere
         catch (RuntimeException e) {
             Log.d(TAG, "unable to delete old", e);
        }
-//        SharedPreferences shared = PreferenceManager.getDefaultSharedPreferences(this);
-//        String d = shared.getString(CallApplication.PREFERENCE_DELETE, getString(R.string.delete_1day));
-//        if (d.equals(getString(R.string.delete_off)))
-//            return;
-//
-//        try {
-//            final String[] ee = Storage.getEncodingValues(this);
-//            Uri path = storage.getStoragePath();
-//
-//            List<Storage.Node> nn = Storage.list(this, path, new Storage.NodeFilter() {
-//                @Override
-//                public boolean accept(Storage.Node n) {
-//                    for (String e : ee) {
-//                        e = e.toLowerCase();
-//                        if (n.name.endsWith(e))
-//                            return true;
-//                    }
-//                    return false;
-//                }
-//            });
-//
-//            for (Storage.Node n : nn) {
-//                Calendar c = Calendar.getInstance();
-//                c.setTimeInMillis(n.last);
-//                Calendar cur = c;
-//
-//                if (d.equals(getString(R.string.delete_1day))) {
-//                    cur = Calendar.getInstance();
-//                    c.add(Calendar.DAY_OF_YEAR, 1);
-//                }
-//                if (d.equals(getString(R.string.delete_1week))) {
-//                    cur = Calendar.getInstance();
-//                    c.add(Calendar.WEEK_OF_YEAR, 1);
-//                }
-//                if (d.equals(getString(R.string.delete_1month))) {
-//                    cur = Calendar.getInstance();
-//                    c.add(Calendar.MONTH, 1);
-//                }
-//                if (d.equals(getString(R.string.delete_3month))) {
-//                    cur = Calendar.getInstance();
-//                    c.add(Calendar.MONTH, 3);
-//                }
-//                if (d.equals(getString(R.string.delete_6month))) {
-//                    cur = Calendar.getInstance();
-//                    c.add(Calendar.MONTH, 6);
-//                }
-//
-//                if (c.before(cur)) {
-//                    if (!CallApplication.getStar(this, n.uri)) // do not delete favorite recorings
-//                        Storage.delete(this, n.uri);
-//                }
-//            }
-//        } catch (RuntimeException e) {
-//            Log.d(TAG, "unable to delete old", e); // hide all deleteOld IO errors
-//        }
     }
 
     @Override
@@ -568,7 +501,6 @@ public class RecordingService extends PersistentService implements SharedPrefere
 
         title = encoding != null ? getString(R.string.encoding_title) : (getString(R.string.recording_title) + " " + getSourceText());
         text = ".../" + Storage.getName(this, targetUri);
-        Log.d("PROCWTagetURI:", String.valueOf(targetUri));
         builder.setViewVisibility(R.id.notification_pause, View.VISIBLE);
         builder.setImageViewResource(R.id.notification_pause, recording ? R.drawable.ic_stop_black_24dp : R.drawable.ic_play_arrow_black_24dp);
 
@@ -627,7 +559,7 @@ public class RecordingService extends PersistentService implements SharedPrefere
         final SharedPreferences shared = PreferenceManager.getDefaultSharedPreferences(this);
         if (!shared.getBoolean(CallApplication.PREFERENCE_DONE_NOTIFICATION, false))
             return;
-        RecentCallActivity.startActivity(this, targetUri, true);
+        //RecentCallActivity.startActivity(this, targetUri, true);
     }
 
     void startRecording() {
@@ -1025,8 +957,7 @@ public class RecordingService extends PersistentService implements SharedPrefere
         now = System.currentTimeMillis();
         targetUri = storage.getNewFile(now, phone, contact, call);
         String format = "%s";
-        fileName = storage.getFormatted(format, now, phone, contact, call);
-        Log.d("PROCWStorageFileName:", fileName);
+        fileName = storage.getFormatted(format, phone, contact);
         if (encoder != null)
             encoder.pause();
         if (storage.recordingPending()) {
@@ -1060,7 +991,6 @@ public class RecordingService extends PersistentService implements SharedPrefere
     private void UploadMP3(final String mp3fileName)
     {
         try {
-            Log.d("PROCW_UPloadMP3!", String.valueOf(targetUri));
             final InputStream fileStream = getContentResolver().openInputStream(targetUri);
             final int fileLength = fileStream.available();
             final Handler handler = new Handler();
@@ -1070,8 +1000,6 @@ public class RecordingService extends PersistentService implements SharedPrefere
                     try {
 
                         final String fileName = storage.UploadMP3(fileStream, fileLength, mp3fileName);
-                        Log.d("PROCW_Success:", fileName);
-
                         handler.post(new Runnable() {
 
                             public void run() {

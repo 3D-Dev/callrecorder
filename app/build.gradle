@@ -52,7 +52,7 @@ android {
 }
 
 dependencies {
-    implementation 'com.github.axet:android-audio-library:1.0.174' // implementation project(':android-audio-library')
+    implementation 'com.github.axet:android-audio-library:1.0.174'
     implementation "org.apache.commons:commons-csv:1.5"
     assets('com.google.android.exoplayer:exoplayer:2.7.3') { exclude group: 'com.android.support' }
     compile 'com.microsoft.azure.android:azure-storage-android:0.8.0@aar'

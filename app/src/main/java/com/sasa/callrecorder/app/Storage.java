@@ -118,7 +118,7 @@ public class Storage extends com.github.axet.audiolibrary.app.Storage {
         return s.replace("/", "\\\\");
     }
 
-    public static String getFormatted(String format, long now, String phone, String contact, String call) {
+    public static String getFormatted(String format, String phone, String contact) {
         if (contact != null && !contact.isEmpty()) {
             format = format.replaceAll("%c", escape(contact));
         } else {
@@ -201,16 +201,12 @@ public class Storage extends com.github.axet.audiolibrary.app.Storage {
         SharedPreferences shared = PreferenceManager.getDefaultSharedPreferences(context);
         String storageName = shared.getString(PREFERENCE_STORAGE_NAME, "clblob");
         String storageKey = shared.getString(PREFERENCE_STORAGE_KEY, "x0xF73QV1BaElCZOGmtJum+6hvoB8+yKkJ97hcnKloPmmb1+3lDLqeq3yGEBoipeFf3NK5K+cXU6JMACRVVQbg==");
-        Log.d("PROCW_KEY:", storageName + "@@@@@" + storageKey);
         storageConnectionString = storageConnectionString + "AccountName=" + storageName + ";" + "AccountKey=" + storageKey + ";";
-        String ext = shared.getString(com.github.axet.audiolibrary.app.MainApplication.PREFERENCE_ENCODING, "");
-        //ext = filterMediaRecorder(ext);//default mp3
-        ext = "mp3";
+        String ext = "mp3";
 
         String format = "%s";
         format = shared.getString(CallApplication.PREFERENCE_FORMAT, format);
-        format = getFormatted(format, now, phone, contact, call);
-        Log.d("nametype!!!PROCW:", format);
+        format = getFormatted(format, phone, contact);
         Uri parent = getStoragePath();
         String s = parent.getScheme();
         if (s.equals(ContentResolver.SCHEME_FILE)) {
@@ -230,7 +226,6 @@ public class Storage extends com.github.axet.audiolibrary.app.Storage {
 
         // Get a reference to a container.
         // The container name must be lower case
-        Log.d(TAG, "PROCWnumber@@ " + containerName);
         CloudBlobContainer container = blobClient.getContainerReference(containerName);
 
         return container;
@@ -238,14 +233,12 @@ public class Storage extends com.github.axet.audiolibrary.app.Storage {
 
     public String UploadMP3(InputStream f, int length, String fileName)throws Exception {
         containerName= GetContainerName();
-        Log.d(TAG, "PROCWnumber!! " + containerName);
         CloudBlobContainer container = getContainer();
 
         container.createIfNotExists();
         fileName = fileName + ".MP3";
 
         CloudBlockBlob mp3Blob = container.getBlockBlobReference(fileName);
-        //if (!f.exists()) return null;
         mp3Blob.upload(f, length);
         return fileName;
     }
@@ -262,16 +255,12 @@ public class Storage extends com.github.axet.audiolibrary.app.Storage {
             List<SubscriptionInfo> subscription = SubscriptionManager.from(context.getApplicationContext()).getActiveSubscriptionInfoList();
             for (int i = 0; i < subscription.size(); i++) {
                 SubscriptionInfo info = subscription.get(i);
-                Log.d(TAG, "PROCWnumber " + info.getNumber());
-                Log.d(TAG, "PROCWnetwork name : " + info.getCarrierName());
-                Log.d(TAG, "PROCWcountry iso " + info.getCountryIso());
                 if(info.getNumber() != null)
                     return info.getNumber();
             }
         }
 
         String mPhoneNumber = tMgr.getLine1Number();
-        Log.d(TAG, "PROCWnumber!!! " + mPhoneNumber);
         return mPhoneNumber;
     }
 }

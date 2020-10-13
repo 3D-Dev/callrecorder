@@ -17,7 +17,6 @@ import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceCategory;
 import android.support.v7.preference.PreferenceFragmentCompat;
 import android.support.v7.preference.PreferenceManager;
-import android.util.Log;
 import android.view.MenuItem;
 
 import com.github.axet.androidlibrary.activities.AppCompatSettingsThemeActivity;
@@ -134,8 +133,6 @@ public class SettingsActivity extends AppCompatSettingsThemeActivity implements 
 
     @Override
     public void onBackPressed() {
-        //finish();
-        Log.d("OnBackPressedPROCW:","");
         MainActivity.startActivity(this);
     }
 

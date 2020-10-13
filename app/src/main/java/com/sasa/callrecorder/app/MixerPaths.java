@@ -1,12 +1,9 @@
 package com.sasa.callrecorder.app;
 
 import android.util.Log;
-
 import com.github.axet.androidlibrary.app.MountInfo;
 import com.github.axet.androidlibrary.app.SuperUser;
-
 import org.apache.commons.io.IOUtils;
-
 import java.io.File;
 import java.io.FileReader;
 import java.io.FilenameFilter;
@@ -16,8 +13,6 @@ import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-// https://gitlab.com/axet/android-call-recorder/merge_requests/4
-//
 public class MixerPaths {
     public static final String TAG = MixerPaths.class.getSimpleName();
 

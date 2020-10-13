@@ -26,6 +26,6 @@ public class NameFormatPreferenceCompat extends com.github.axet.androidlibrary.p
         SharedPreferences shared = PreferenceManager.getDefaultSharedPreferences(getContext());
         String ext = shared.getString(com.github.axet.audiolibrary.app.MainApplication.PREFERENCE_ENCODING, "");
         ext = Storage.filterMediaRecorder(ext);
-        return Storage.getFormatted(str, 1512340435083l, "+1 (334) 333-33-33", "Contact Name", CallApplication.CALL_IN) + "." + ext;
+        return Storage.getFormatted(str, "+1 (334) 333-33-33", "Contact Name") + "." + ext;
     }
 }

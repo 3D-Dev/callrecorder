@@ -13,12 +13,12 @@
         android:orderInCategory="300"
         android:title="@string/open_recording_folder"
         app:showAsAction="never" />
-    <item
-        android:id="@+id/action_call"
-        android:checkable="true"
-        android:orderInCategory="500"
-        android:title="@string/call_recording"
-        app:showAsAction="never" />
+<!--    <item-->
+<!--        android:id="@+id/action_call"-->
+<!--        android:checkable="true"-->
+<!--        android:orderInCategory="500"-->
+<!--        android:title="@string/call_recording"-->
+<!--        app:showAsAction="never" />-->
     <item
         android:id="@+id/action_setting_info"
         android:orderInCategory="600"

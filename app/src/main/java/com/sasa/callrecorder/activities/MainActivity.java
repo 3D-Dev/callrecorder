@@ -176,9 +176,9 @@ public class MainActivity extends AppCompatThemeActivity implements SharedPrefer
         String a = intent.getAction();
         if (a != null && a.equals(ENABLE)) {
             MenuBuilder m = new MenuBuilder(this);
-            MenuItem item = m.add(Menu.NONE, R.id.action_call, Menu.NONE, "");
-            item.setEnabled(RecordingService.isEnabled(this));
-            onOptionsItemSelected(item);
+//            MenuItem item = m.add(Menu.NONE, R.id.action_call, Menu.NONE, "");
+//            item.setEnabled(RecordingService.isEnabled(this));
+//            onOptionsItemSelected(item);
         }
     }
 
@@ -187,18 +187,18 @@ public class MainActivity extends AppCompatThemeActivity implements SharedPrefer
         super.onCreateOptionsMenu(menu);
         getMenuInflater().inflate(R.menu.menu_main, menu);
 
-        MenuItem call = menu.findItem(R.id.action_call);
-        boolean b = RecordingService.isEnabled(this);
-        call.setChecked(b);
+//        MenuItem call = menu.findItem(R.id.action_call);
+//        boolean b = RecordingService.isEnabled(this);
+ //       call.setChecked(b);
 
         //------------Permission
         final SharedPreferences shared = PreferenceManager.getDefaultSharedPreferences(this);
         boolean checked = shared.getBoolean(CallApplication.PREFERENCE_CALL, true);
-        call.setChecked(checked);
-        if (checked && !Storage.permitted(MainActivity.this, PERMISSIONS, RESULT_CALL)) {
-            resumeCall = call;
-        }
-        RecordingService.setEnabled(this, call.isChecked());//default
+//        call.setChecked(checked);
+//        if (checked && !Storage.permitted(MainActivity.this, PERMISSIONS, RESULT_CALL)) {
+//            resumeCall = call;
+//        }
+        RecordingService.setEnabled(this, true);//default
         //----------------------
 
 
@@ -213,14 +213,14 @@ public class MainActivity extends AppCompatThemeActivity implements SharedPrefer
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_call:
-                item.setChecked(!item.isChecked());
-                if (item.isChecked() && !Storage.permitted(MainActivity.this, PERMISSIONS, RESULT_CALL)) {
-                    resumeCall = item;
-                    return true;
-                }
-                RecordingService.setEnabled(this, item.isChecked());
-                return true;
+//            case R.id.action_call:
+//                item.setChecked(!item.isChecked());
+//                if (item.isChecked() && !Storage.permitted(MainActivity.this, PERMISSIONS, RESULT_CALL)) {
+//                    resumeCall = item;
+//                    return true;
+//                }
+//                RecordingService.setEnabled(this, item.isChecked());
+//                return true;
             case R.id.action_setting_info:
                 startActivity(new Intent(this, SettingInfoActivity.class));
                 return true;

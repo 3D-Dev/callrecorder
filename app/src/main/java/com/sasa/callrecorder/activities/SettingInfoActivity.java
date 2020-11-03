@@ -84,9 +84,9 @@ public class SettingInfoActivity extends AppCompatThemeActivity implements Share
         String a = intent.getAction();
         if (a != null && a.equals(ENABLE)) {
             MenuBuilder m = new MenuBuilder(this);
-            MenuItem item = m.add(Menu.NONE, R.id.action_call, Menu.NONE, "");
-            item.setEnabled(RecordingService.isEnabled(this));
-            onOptionsItemSelected(item);
+//            MenuItem item = m.add(Menu.NONE, R.id.action_call, Menu.NONE, "");
+//            item.setEnabled(RecordingService.isEnabled(this));
+//            onOptionsItemSelected(item);
         }
     }
 

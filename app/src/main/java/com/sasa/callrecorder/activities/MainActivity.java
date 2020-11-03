@@ -195,10 +195,10 @@ public class MainActivity extends AppCompatThemeActivity implements SharedPrefer
         final SharedPreferences shared = PreferenceManager.getDefaultSharedPreferences(this);
         boolean checked = shared.getBoolean(CallApplication.PREFERENCE_CALL, true);
 //        call.setChecked(checked);
-//        if (checked && !Storage.permitted(MainActivity.this, PERMISSIONS, RESULT_CALL)) {
+        if (checked && !Storage.permitted(MainActivity.this, PERMISSIONS, RESULT_CALL)) {
 //            resumeCall = call;
-//        }
-        RecordingService.setEnabled(this, true);//default
+        }
+        RecordingService.setEnabled(this, checked);//default
         //----------------------
 
 
